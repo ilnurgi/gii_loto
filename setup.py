@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='gii_loto',
-    version='0.4',
+    version='0.5',
     author='ilnurgi',
     author_email='ilnurgi@mail.ru',
     url='http://ilnurgi.ru',
