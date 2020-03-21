@@ -5,7 +5,7 @@ import os
 
 from matplotlib import pyplot
 
-import settings
+from gii_loto import settings
 
 
 def __create_plot(ax, numbers: dict, editions: tuple, label_x: str):

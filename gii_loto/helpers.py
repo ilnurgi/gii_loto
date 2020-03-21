@@ -3,7 +3,7 @@
 
 from selenium import webdriver
 
-import settings
+from gii_loto import settings
 
 
 def log(log_message: str):

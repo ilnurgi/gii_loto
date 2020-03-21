@@ -12,9 +12,8 @@ import yaml
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 
-import settings
-
-from helpers import log, get_browser
+from gii_loto import settings
+from gii_loto.helpers import log, get_browser
 
 
 def __get_cache_file_path(edition: int) -> str:

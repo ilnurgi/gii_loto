@@ -1,15 +1,18 @@
-import setuptools
+from setuptools import setup, find_packages
 
-setuptools.setup(
+setup(
     name='gii_loto',
-    version='0.3',
+    version='0.4',
     author='ilnurgi',
     author_email='ilnurgi@mail.ru',
     url='http://ilnurgi.ru',
-    packages=setuptools.find_packages(),
-    # package_dir={
-    #     '': 'src'
-    # },
+    packages=find_packages(),
+    install_requires=[
+        'selenium',
+        'pyyaml',
+        'bs4',
+        'matplotlib',
+    ],
     entry_points={
         'console_scripts': [
             'gii_loto = gii_loto.app:main'

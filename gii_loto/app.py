@@ -3,9 +3,9 @@
 
 from pprint import pprint
 
-from loto_numbers import get_numbers
-from plotter import create_plot
-from tickets import get_lucky_tickets
+from gii_loto.numbers import get_numbers
+from gii_loto.plotter import create_plot
+from gii_loto.tickets import get_lucky_tickets
 
 
 def main():

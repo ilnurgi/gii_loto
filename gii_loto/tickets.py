@@ -3,9 +3,8 @@
 
 from time import sleep
 
-import settings
-
-from helpers import get_browser
+from gii_loto import settings
+from gii_loto.helpers import get_browser
 
 
 def __get_lucky_tickets(browser, miss_percents):
