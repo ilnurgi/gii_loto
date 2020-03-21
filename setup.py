@@ -1,8 +1,8 @@
 from distutils.core import setup
 
 setup(
-    name='GiiLoto',
-    version='0.1',
+    name='gii_loto',
+    version='0.2',
     author='ilnurgi',
     author_email='ilnurgi@mail.ru',
     url='http://ilnurgi.ru',
