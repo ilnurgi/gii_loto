@@ -1,14 +1,15 @@
-from distutils.core import setup
+import setuptools
 
-setup(
+setuptools.setup(
     name='gii_loto',
-    version='0.2',
+    version='0.3',
     author='ilnurgi',
     author_email='ilnurgi@mail.ru',
     url='http://ilnurgi.ru',
-    package_dir={
-        '': 'src'
-    },
+    packages=setuptools.find_packages(),
+    # package_dir={
+    #     '': 'src'
+    # },
     entry_points={
         'console_scripts': [
             'gii_loto = gii_loto.app:main'
