@@ -3,24 +3,34 @@
 
 from pprint import pprint
 
-from gii_loto.numbers import get_numbers
+from selenium import webdriver
+
+from gii_loto import settings
+from gii_loto.lotos.first import FirstLoto
+from gii_loto.lotos.second import SecondLoto
 from gii_loto.plotter import create_plot
-from gii_loto.tickets import get_lucky_tickets
 
 
 def main():
     """точка входа
     """
 
-    numbers = get_numbers()
+    browser = webdriver.Chrome(settings.CHROME_DRIVER_PATH)
+    browser.set_page_load_timeout(settings.PAGE_LOAD_TIMEOUT)
 
-    # рисуем диаграммы распределния номеров
-    create_plot(numbers)
+    for loto in (
+            # FirstLoto(browser),
+            SecondLoto(browser),
+    ):
+        loto.collect_numbers()
 
-    # получаем счастливые билеты
-    tickets = get_lucky_tickets(numbers)
+        # рисуем диаграммы распределния номеров
+        create_plot(loto)
 
-    pprint(sorted(tickets.items(), key=lambda item: item[1], reverse=True))
+        # получаем счастливые билеты
+        tickets = loto.get_lucky_tickets()
+
+        pprint(sorted(tickets.items(), key=lambda item: item[1], reverse=True))
 
 
 if __name__ == '__main__':

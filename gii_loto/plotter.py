@@ -5,7 +5,7 @@ import os
 
 from matplotlib import pyplot
 
-from gii_loto import settings
+from gii_loto.lotos.base import BaseLoto
 
 
 def __create_plot(ax, numbers: dict, editions: tuple, label_x: str):
@@ -34,32 +34,32 @@ def __create_plot(ax, numbers: dict, editions: tuple, label_x: str):
     ax.set_xlabel(label_x)
 
 
-def create_plot(numbers):
+def create_plot(loto: BaseLoto):
     """отрисовка графиков
-    :param numbers: сведения по числам
+    :param loto: лотерея
     """
     rows = 2
     columns = 5
     fig, axs = pyplot.subplots(rows, columns, figsize=(25.6, 10.8))
 
     plots = (
-        (settings.EDITIONS[-10:], 'last 10'),
-        (settings.EDITIONS[-20:], 'last 20'),
-        (settings.EDITIONS[-30:], 'last 30'),
-        (settings.EDITIONS[-40:], 'last 40'),
-        (settings.EDITIONS[-50:], 'last 50'),
-        (settings.EDITIONS[-100:], 'last 100'),
-        (settings.EDITIONS[-200:], 'last 200'),
-        (settings.EDITIONS[-300:], 'last 300'),
-        (settings.EDITIONS[-400:], 'last 400'),
-        (settings.EDITIONS, f'last {settings.EDITIONS_COUNT}'),
+        (loto.EDITIONS[-10:], 'last 10'),
+        (loto.EDITIONS[-20:], 'last 20'),
+        (loto.EDITIONS[-30:], 'last 30'),
+        (loto.EDITIONS[-40:], 'last 40'),
+        (loto.EDITIONS[-50:], 'last 50'),
+        (loto.EDITIONS[-100:], 'last 100'),
+        (loto.EDITIONS[-200:], 'last 200'),
+        (loto.EDITIONS[-300:], 'last 300'),
+        (loto.EDITIONS[-400:], 'last 400'),
+        (loto.EDITIONS, f'last {loto.EDITIONS_COUNT}'),
     )
     plot_index = 0
     for row in range(rows):
         for col in range(columns):
             plot_editions, text = plots[plot_index]
             plot_index += 1
-            __create_plot(axs[row, col], numbers, plot_editions, text)
+            __create_plot(axs[row, col], loto.numbers, plot_editions, text)
 
     fig.tight_layout()
-    fig.savefig(os.path.join(settings.SETTINGS_DIR, 'plot.png'))
+    fig.savefig(os.path.join(loto.LOGS_DIR, 'plot.png'))
