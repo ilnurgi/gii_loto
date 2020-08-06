@@ -28,7 +28,7 @@ class BaseLoto:
     CONFIG_LOAD_KEYS = (
         'NUMBERS_PATH', 'FIRST_EDITION', 'LAST_EDITION', 'URL_ARCHIVE', 'TICKET_MAX_PERCENT',
         'URL_TICKETS', 'NUMBERS_EXCLUDE_TEXTS', 'TICKET_MAX_PERCENT',
-        'S_1', 'S_1_1', 'S_2', 'S_3', 'S_4', 'S_5', 'S_6', 'S_7', 'S_8_1', 'S_8_2',
+        'S_1', 'S_1_1', 'S_2', 'S_3', 'S_4', 'S_5', 'S_6', 'S_7', 'S_8_1', 'S_8_2', 'S_9',
     )
 
     NUMBERS_PATH = None
@@ -48,6 +48,7 @@ class BaseLoto:
     S_7 = None
     S_8_1 = None
     S_8_2 = None
+    S_9 = None
 
     def __init__(self, browser: WebDriver):
         """иницализация
@@ -116,7 +117,6 @@ class BaseLoto:
     @log('download_edition: {edition}')
     def __download_edition(self, edition: int, last_downloaded_edition: int) -> bool:
         """загружаем сведения по тиражу
-        :param browser: браузер для загрузки данных
         :param edition: тираж
         :param last_downloaded_edition: последний загруженный тираж
         :return: возвращает результат работы,
@@ -209,9 +209,15 @@ class BaseLoto:
             result[div_ticket_number.text] = (sum(miss_percents[n] for n in numbers) / len(numbers))
         return result
 
+    def __refresh_tickets(self):
+        """подгрузка билетов
+        """
+        self.browser.execute_script(self.S_9)
+
     def get_lucky_tickets(self):
         """возвращает счастливые билеты
         """
+
         # вычисляем процент не выпадания номеров
         miss_counter = {number: 0 for number in settings.ALL_NUMBERS}
         for edition, miss_edition_numbers in self.numbers.items():
@@ -221,13 +227,21 @@ class BaseLoto:
             n: (counter / self.EDITIONS_COUNT) * 100
             for n, counter in miss_counter.items()
         }
+        miss_percents_tuple = sorted(miss_percents.items(), key=lambda item: item[1])
+        print(miss_percents_tuple[:10])
+        print(miss_percents_tuple[-10:])
 
         self.browser.get(self.URL_TICKETS)
         input('авторизуйся')
-        max_percent = self.TICKET_MAX_PERCENT
-        while True:
+        self.browser.get(self.URL_TICKETS)
+        input('выбери номера')
 
-            self.browser.get(self.URL_TICKETS)
+        max_percent = self.TICKET_MAX_PERCENT
+        step = 0
+        max_step = 0
+        while True:
+            sleep(random.randint(30, 60))
+
             result = self.__get_lucky_tickets(miss_percents)
             min_percent = min(result.values())
             print(min_percent, max_percent)
@@ -236,4 +250,10 @@ class BaseLoto:
                 return result
 
             max_percent += settings.TICKET_MAX_PERCENT_STEP
-            sleep(1)
+
+            step += 1
+            if step > max_step:
+                max_percent = self.TICKET_MAX_PERCENT
+                max_step += 1
+                step = 0
+            self.__refresh_tickets()

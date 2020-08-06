@@ -1,4 +1,4 @@
 .idea
 venv
 dist
-gii_loto.egg-info
+.egg-info

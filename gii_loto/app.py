@@ -18,19 +18,19 @@ def main():
     browser = webdriver.Chrome(settings.CHROME_DRIVER_PATH)
     browser.set_page_load_timeout(settings.PAGE_LOAD_TIMEOUT)
 
-    for loto in (
-            # FirstLoto(browser),
-            SecondLoto(browser),
-    ):
-        loto.collect_numbers()
+    loto = FirstLoto(browser)
+    # loto = SecondLoto(browser)
 
-        # рисуем диаграммы распределния номеров
-        create_plot(loto)
+    loto.collect_numbers()
 
-        # получаем счастливые билеты
-        tickets = loto.get_lucky_tickets()
+    # рисуем диаграммы распределния номеров
+    create_plot(loto)
 
-        pprint(sorted(tickets.items(), key=lambda item: item[1], reverse=True))
+    # получаем счастливые билеты
+    tickets = loto.get_lucky_tickets()
+
+    pprint(sorted(tickets.items(), key=lambda item: item[1], reverse=True))
+    input('готово')
 
 
 if __name__ == '__main__':
