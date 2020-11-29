@@ -28,8 +28,16 @@ def main():
 
     # получаем счастливые билеты
     tickets = loto.get_lucky_tickets()
-
     pprint(sorted(tickets.items(), key=lambda item: item[1], reverse=True))
+
+    more_counter = 0
+    more_max = 5
+
+    while more_counter < more_max and input('ещё?'):
+        tickets = loto.get_lucky_tickets()
+        pprint(sorted(tickets.items(), key=lambda item: item[1], reverse=True))
+        more_counter += 1
+
     input('готово')
 
 

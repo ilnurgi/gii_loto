@@ -36,7 +36,10 @@ class FirstLoto(BaseLoto):
         try:
             numbers = [int(n) for n in numbers.text.split()]
         except ValueError:
-            if numbers.text.strip().lower() not in self.NUMBERS_EXCLUDE_TEXTS:
+            if not any(
+                    exclude in numbers.text.strip().lower()
+                    for exclude in self.NUMBERS_EXCLUDE_TEXTS_IN
+            ):
                 print(edition, name, numbers.text.lower())
                 raise
 

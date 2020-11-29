@@ -4,13 +4,14 @@
 import os
 import random
 
-from bs4 import BeautifulSoup, Tag
-from selenium.common.exceptions import TimeoutException
 from time import sleep
-
 from typing import Dict, Set, Tuple
 
 import yaml
+
+from bs4 import BeautifulSoup
+from bs4.element import Tag
+
 from selenium.webdriver.remote.webdriver import WebDriver
 
 from gii_loto import settings
@@ -27,7 +28,8 @@ class BaseLoto:
 
     CONFIG_LOAD_KEYS = (
         'NUMBERS_PATH', 'FIRST_EDITION', 'LAST_EDITION', 'URL_ARCHIVE', 'TICKET_MAX_PERCENT',
-        'URL_TICKETS', 'NUMBERS_EXCLUDE_TEXTS', 'TICKET_MAX_PERCENT',
+        'URL_TICKETS', 'NUMBERS_EXCLUDE_TEXTS_IN', 'TICKET_MAX_PERCENT',
+        'TICKET_MAX_PERCENT_STEP', 'TICKET_MAX_STEP',
         'S_1', 'S_1_1', 'S_2', 'S_3', 'S_4', 'S_5', 'S_6', 'S_7', 'S_8_1', 'S_8_2', 'S_9',
     )
 
@@ -36,8 +38,10 @@ class BaseLoto:
     LAST_EDITION = None
     URL_ARCHIVE = None
     TICKET_MAX_PERCENT = None
+    TICKET_MAX_PERCENT_STEP = settings.TICKET_MAX_PERCENT_STEP
+    TICKET_MAX_STEP = settings.TICKET_MAX_STEP
     URL_TICKETS = None
-    NUMBERS_EXCLUDE_TEXTS = None
+    NUMBERS_EXCLUDE_TEXTS_IN = None
     S_1 = None
     S_1_1 = None
     S_2 = None
@@ -151,8 +155,8 @@ class BaseLoto:
         raise NotImplementedError()
 
     @log('get parsed edition: {edition}')
-    def __get_parsed_edition(self, edition: int) -> Dict[int, int]:
-        """парсим числа тиража
+    def __get_parsed_edition(self, edition: int) -> set:
+        """парсим числа тиража и возвращаем множество не выпавших чисел
         :param edition: тираж
         """
         cache_file_path = self.__get_cache_file_path(edition)
@@ -218,23 +222,33 @@ class BaseLoto:
         """возвращает счастливые билеты
         """
 
-        # вычисляем процент не выпадания номеров
+        # количество не выпадения чисел
         miss_counter = {number: 0 for number in settings.ALL_NUMBERS}
+
+        # вычисляем сколько раз не выпал номер
         for edition, miss_edition_numbers in self.numbers.items():
             for miss_number in miss_edition_numbers:
                 miss_counter[miss_number] += 1
+
+        # вычисляем в процентом соотношении
+        # чем выше число, тем чаще не выпадает число
         miss_percents = {
             n: (counter / self.EDITIONS_COUNT) * 100
             for n, counter in miss_counter.items()
         }
         miss_percents_tuple = sorted(miss_percents.items(), key=lambda item: item[1])
-        print(miss_percents_tuple[:10])
+
+        print('номера которые выпадают часто')
+        print(miss_percents_tuple[:20])
+
+        print('номера которые выпадают реже')
         print(miss_percents_tuple[-10:])
 
         self.browser.get(self.URL_TICKETS)
         input('авторизуйся')
         self.browser.get(self.URL_TICKETS)
         input('выбери номера')
+        print('подбираю')
 
         max_percent = self.TICKET_MAX_PERCENT
         step = 0
@@ -249,11 +263,11 @@ class BaseLoto:
             if min_percent < max_percent:
                 return result
 
-            max_percent += settings.TICKET_MAX_PERCENT_STEP
+            max_percent += self.TICKET_MAX_PERCENT_STEP
 
             step += 1
             if step > max_step:
                 max_percent = self.TICKET_MAX_PERCENT
-                max_step += 1
+                max_step += self.TICKET_MAX_STEP
                 step = 0
             self.__refresh_tickets()
